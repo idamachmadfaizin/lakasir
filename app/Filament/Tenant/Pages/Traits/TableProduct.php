@@ -93,23 +93,23 @@ trait TableProduct
                     ->translateLabel()
                     ->icon('heroicon-o-plus')
                     ->button()
-                    ->form([
-                        TextInput::make('amount')
-                            ->translateLabel()
-                            ->extraAttributes([
-                                'focus',
-                            ])
-                            ->rules([
-                                function (Product $product) {
-                                    return function (string $attribute, $value, Closure $fail) use ($product) {
-                                        if (! $this->validateStock($product, $value)) {
-                                            $fail('Stock is out');
-                                        }
-                                    };
-                                },
-                            ])
-                            ->default(1),
-                    ])
+                    // ->form([
+                    //     TextInput::make('amount')
+                    //         ->translateLabel()
+                    //         ->extraAttributes([
+                    //             'focus',
+                    //         ])
+                    //         ->rules([
+                    //             function (Product $product) {
+                    //                 return function (string $attribute, $value, Closure $fail) use ($product) {
+                    //                     if (! $this->validateStock($product, $value)) {
+                    //                         $fail('Stock is out');
+                    //                     }
+                    //                 };
+                    //             },
+                    //         ])
+                    //         ->default(1),
+                    // ])
                     ->extraAttributes([
                         'class' => 'mr-auto',
                     ])
