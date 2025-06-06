@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $email = 'superadmin@admin.com';
+        $email = 'admin@mail.com';
         $password = bcrypt('password');
         if (Schema::hasTable('tenant')) {
             $dbName = DB::connection()->getDatabaseName();
