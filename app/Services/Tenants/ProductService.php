@@ -56,8 +56,10 @@ class ProductService
     {
         foreach ($heroImages as $heroImage) {
             $uploadedFile = UploadedFile::where('url', $heroImage)->first();
-            $uploadedFile->deleteFromPublic('product');
-            $uploadedFile->delete();
+            if ($uploadedFile) {
+                $uploadedFile->deleteFromPublic('product');
+                $uploadedFile->delete();
+            }
         }
     }
 }
