@@ -96,7 +96,7 @@ class ThermalPrinter {
           return `<hr style="${this.getStyleString(item.styles)}">`;
         case 'tableRow':
           const cells = item.cells.map((cell, i) =>
-            `<td style="width:${item.widths[i] || 'auto'}; ${this.getStyleString({...item.styles, ...{'text-align': Number.isInteger(cell) ? 'right' : 'left'}})};">${moneyFormat(cell)}</td>`
+            `<td style="width:${item.widths[i] || 'auto'}; ${this.getStyleString({...item.styles, ...{'text-align': Number.isInteger(cell) ? 'right' : 'left'}})}; vertical-align: baseline;">${moneyFormat(cell)}</td>`
           );
           return `<table style="width:100%"><tr>${cells.join('')}</tr></table>`;
         default:

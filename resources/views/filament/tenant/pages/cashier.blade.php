@@ -334,6 +334,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
   });
   document.getElementById("printReceiptButton").addEventListener('click', async (event) => {
     let about = @js($about);
+    console.log({about, selling});
     const printerData = getPrinter();
 
     try {
@@ -349,73 +350,95 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
           ])
           .send()
       } else {
-        const printer = new Printer(printerData.printerId);
-        let printerAction = printer.font('a');
+        const printer = new ThermalPrinter();
         if(about != undefined || about != null) {
-          printerAction.size(1)
-            .align('center')
-            .text(about.shop_name)
-            .size(0)
-            .text(about.shop_location);
-          if(printerData.header != undefined) {
-            printerAction
-              .text(printerData.header);
-          }
-          printerAction.align('left')
-            .text('-------------------------------');
+          printer
+            .size('large')
+            .text(about.shop_name.toUpperCase(), 'center')
+            .size('normal')
+            .text(about.shop_location.toUpperCase());
         }
-        printerAction.table(['@lang('Cashier')', selling.user.name])
-        if(selling.table != undefined && selling.table != null) {
-          printerAction.table(['@lang('Table')', selling.table.number])
+        if(printerData.header != undefined) {
+          printer
+            .size('large')
+            .text(printerData.header.toUpperCase(), 'center');
         }
-        printerAction.table(['@lang('Payment method')', selling.payment_method.name]);
+
+        printer.hr();
+
+        if (selling.user.name !== undefined && selling.user.name !== null) {
+          printer.tableRow(
+            ['@lang('KASIR')', selling.user.name.toUpperCase()],
+            ['40%'],
+          );
+        }
+        {{--if(selling.table != undefined && selling.table != null) {--}}
+        {{--  printer.tableRow(--}}
+        {{--    ['@lang('MEJA')', ': ' + selling.table.number],--}}
+        {{--    ['40%'],--}}
+        {{--  );--}}
+        {{--}--}}
+        {{--printer.tableRow(--}}
+        {{--  ['@lang('PEMBAYARAN')', ': ' + selling.payment_method.name.toUpperCase()],--}}
+        {{--  ['40%'],--}}
+        {{--);--}}
+
+        printer.tableRow([])
         if(selling.member != undefined && selling.member != null) {
-          printerAction
-            .table(['Member', selling.member.name]);
+          printer.tableRow(
+            ['MEMBER', ': ' + selling.member.name.toUpperCase()],
+            ['40%'],
+          );
         }
-        printerAction
-          .text('-------------------------------');
+
+        printer.hr();
+
         selling.selling_details.forEach(sellingDetail => {
           let price = sellingDetail.price;
-          let text = moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString();
-          printerAction.table([sellingDetail.product.name, moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString()])
-          if (sellingDetail.discount_price > 0) {
-            price = price - sellingDetail.discount_price;
-            printerAction
-              .align('right')
-              .text(`(${moneyFormat(sellingDetail.discount_price)})`)
-          }
-          printerAction
-            .align('right')
-            .text(moneyFormat(price))
-            .align('left')
+          // let text = moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString();
+
+          // if (sellingDetail.discount_price > 0) {
+          //   price = price - sellingDetail.discount_price;
+          //   printer.text(`(${moneyFormat(sellingDetail.discount_price)})`, 'right');
+          // }
+
+          // printer.text(moneyFormat(price), 'right');
+
+          printer.tableRow(
+            [sellingDetail.product.name.toUpperCase(), sellingDetail.qty, sellingDetail.price / sellingDetail.qty, price],
+            ["auto", "8%", "23%", "23%"]);
         });
-        printerAction
-          .text('-------------------------------');
-        if("@js(feature(SellingTax::class))" == 'true') {
-          printerAction.table(['@lang('Tax')', `${selling.tax}%`])
-            .table(['@lang('Tax price')', moneyFormat(selling.tax_price)]);
-        }
-        printerAction
-          .table(['@lang('Subtotal')', moneyFormat(selling.total_price)])
-        if("@js(feature(Discount::class))" == 'true') {
-          printerAction
-            .table(['@lang('Discount')', `(${moneyFormat(selling.total_discount_per_item + selling.discount_price)})`])
-        }
-        printerAction
-          .table(['@lang('Total price')', moneyFormat(selling.grand_total_price)])
-          .text('-------------------------------')
-          .table(['@lang('Payed money')', moneyFormat(selling.payed_money)])
-          .table(['@lang('Change')', moneyFormat(selling.money_changes)])
-          .align('center');
+
+        printer.hr();
+
+        {{--if("@js(feature(SellingTax::class))" == 'true') {--}}
+        {{--  printer--}}
+        {{--    .tableRow(['@lang('Tax')', `${selling.tax}%`])--}}
+        {{--    .table(['@lang('Tax price')', moneyFormat(selling.tax_price)]);--}}
+        {{--}--}}
+
+        {{--printer.tableRow(--}}
+        {{--  ['@lang('Subtotal')', selling.total_price],--}}
+        {{--  ['40%'],--}}
+        {{--);--}}
+
+        {{--if("@js(feature(Discount::class))" == 'true') {--}}
+        {{--  printer.tableRow(--}}
+        {{--    ['@lang('Discount')', `(${moneyFormat(selling.total_discount_per_item + selling.discount_price)})`],--}}
+        {{--    ['40%'],--}}
+        {{--  );--}}
+        {{--}--}}
+        printer
+          .tableRow(['@lang('TOTAL')', selling.grand_total_price], ['40%'])
+          .tableRow(['@lang('TUNAI')', selling.payed_money], ['40%'])
+          .tableRow(['@lang('KEMBALI')', selling.money_changes], ['40%']);
 
         if(printerData.footer != undefined) {
-          printerAction
-            .text(printerData.footer);
+          printer.text(printerData.footer, 'center');
         }
 
-        await printerAction
-          .cut()
+        printer
+          // .cut()
           .print();
       }
     } catch (error) {

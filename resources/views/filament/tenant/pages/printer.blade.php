@@ -58,9 +58,6 @@
       async fetchBluetooth() {},
       save() {
         $wire.validate();
-        if(!$wire.data.header) {
-          return;
-        }
         localStorage.setItem("printer", JSON.stringify({
           ...$wire.data,
         }));

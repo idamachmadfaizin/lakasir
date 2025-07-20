@@ -37,7 +37,6 @@ class Printer extends Page implements HasActions, HasForms
         return $form->schema([
             Components\Textarea::make('header')
                 ->rows(5)
-                ->required()
                 ->translateLabel(),
             Components\Textarea::make('footer')
                 ->rows(5)
@@ -65,9 +64,6 @@ class Printer extends Page implements HasActions, HasForms
 
     public function validateInput()
     {
-        $this->validate([
-            'data.header' => 'trim|required',
-        ]);
     }
 
     //Save function
