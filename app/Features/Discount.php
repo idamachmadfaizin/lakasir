@@ -4,6 +4,8 @@ namespace App\Features;
 
 class Discount
 {
+    public $name = "discount";
+
     /**
      * Resolve the feature's initial value.
      */

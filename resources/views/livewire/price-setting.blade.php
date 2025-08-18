@@ -9,9 +9,7 @@
         <x-heroicon-o-wrench-screwdriver class="dark:text-white text-black h-6 w-4"/> <p class="hidden lg:block">@lang('Price')</p>
       </div>
     </button>
-    <x-filament::modal
-      id="price-setting-{{$cartItem->id}}"
-      x-on:close-modal="$wire.call('modalClosed')">
+    <x-filament::modal id="price-setting-{{$cartItem->id}}">
       <x-slot name="heading">
         <p>{{ __('Choose the unit price') }}</p>
       </x-slot>

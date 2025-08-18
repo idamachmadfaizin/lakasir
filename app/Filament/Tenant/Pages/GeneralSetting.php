@@ -68,13 +68,29 @@ class GeneralSetting extends Page implements HasActions, HasForms
         }
 
         $this->feature = [
-            'supplier' => Feature::active('supplier'),
+            'discount' => Feature::active('discount'),
+            'edit-profile' => Feature::active('edit-profile'),
+            'member' => Feature::active('member'),
+            'payment-method' => Feature::active('payment-method'),
+            'payment-shortcut-button' => Feature::active('payment-shortcut-button'),
+            'permission' => Feature::active('permission'),
+            'print-product-label' => Feature::active('print-product-label'),
+            'product-barcode' => Feature::active('product-barcode'),
+            'product-expired' => Feature::active('product-expired'),
+            'product-import' => Feature::active('product-import'),
+            'product-initial-price' => Feature::active('product-initial-price'),
+            'product-sku' => Feature::active('product-sku'),
+            'product-stock' => Feature::active('product-stock'),
+            'product-type' => Feature::active('product-type'),
             'purchasing' => Feature::active('purchasing'),
             'receivable' => Feature::active('receivable'),
+            'role' => Feature::active('role'),
+            'selling-tax' => Feature::active('selling-tax'),
             'stock-opname' => Feature::active('stock-opname'),
+            'supplier' => Feature::active('supplier'),
+            'user' => Feature::active('user'),
             'voucher' => Feature::active('voucher'),
-            'pos-v2' => Feature::active('pos-v2'),
-            'product-import' => Feature::active('product-import')
+            // 'pos-v2' => Feature::active('pos-v2'),
         ];
 
         /** @var User $user */
@@ -136,15 +152,11 @@ class GeneralSetting extends Page implements HasActions, HasForms
                         ->visible(can('access feature flag'))
                         ->translateLabel()
                         ->schema([
-                            Section::make([
-                                Checkbox::make('supplier')->inline(),
-                                Checkbox::make('purchasing')->inline(),
-                                Checkbox::make('receivable')->inline(),
-                                Checkbox::make('stock-opname')->inline(),
-                                Checkbox::make('voucher')->inline(),
-                                Checkbox::make('pos-v2')->label("POS V2")->inline(),
-                                Checkbox::make('product-import')->inline(),
-                            ]),
+                            Section::make(
+                                array_map(function($key) {
+                                    return Checkbox::make($key)->inline();
+                                }, array_keys($this->feature))
+                            ),
                             Actions::make([
                                 Action::make('Save')
                                     ->translateLabel()
@@ -178,8 +190,8 @@ class GeneralSetting extends Page implements HasActions, HasForms
     {
         $this->validate([
             'about.shop_name' => 'required',
+            'about.business_type' => 'required',
             'about.shop_location' => 'required',
-            'about.currency' => 'required',
             // 'data.photo' => 'required',
         ]);
 

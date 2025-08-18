@@ -100,6 +100,11 @@ class TenantPanelProvider extends PanelProvider
             fn () => view('meta')
         );
 
+        // FilamentView::registerRenderHook(
+        //     PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+        //     fn () => view('version-indicator')
+        // );
+
         if (app()->environment('demo')) {
             $arraySupport = [
                 'https://saweria.co/sheenazien',
@@ -131,6 +136,7 @@ class TenantPanelProvider extends PanelProvider
                 Js::make('custom-javascript', resource_path('js/app.js')),
                 Js::make('printer', resource_path('js/printer.js')),
                 Js::make('indexeddb', resource_path('js/indexeddb.js')),
+                Js::make('dayjs', resource_path('js/dayjs.min.js')),
             ])
             ->favicon(url('favicon.ico'))
             ->spa(config('app.spa_mode'))

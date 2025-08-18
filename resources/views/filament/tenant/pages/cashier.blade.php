@@ -199,7 +199,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
             />
           </x-filament::input.wrapper>
           <div class="mb-4">
-            @include('filament.tenant.pages.cashier.total')
+            @include('filament.tenant.pages.cashier.total', ['visibleMoneyChanges' => true])
           </div>
           @error('payed_money') <span class="error text-danger-500">{{ $message }}</span> @enderror
           <input
@@ -332,11 +332,102 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
       document.getElementById('changes').innerHTML = moneyFormat(selling.money_changes);
     }, 300);
   });
+  {{--document.getElementById("printReceiptButton").addEventListener('click', async (event) => {--}}
+  {{--  let about = @js($about);--}}
+  {{--  const printerData = getPrinter();--}}
+
+  {{--  try {--}}
+  {{--    if (!printerData) {--}}
+  {{--      new FilamentNotification()--}}
+  {{--        .title('@lang('You should choose the printer first in printer setting')')--}}
+  {{--        .danger()--}}
+  {{--        .actions([--}}
+  {{--          new FilamentNotificationAction('Setting')--}}
+  {{--          .icon('heroicon-o-cog-6-tooth')--}}
+  {{--          .button()--}}
+  {{--          .url('/member/printer'),--}}
+  {{--        ])--}}
+  {{--        .send()--}}
+  {{--    } else {--}}
+  {{--      const printer = new Printer(printerData.printerId);--}}
+  {{--      let printerAction = printer.font('a');--}}
+  {{--      if(about != undefined || about != null) {--}}
+  {{--        printerAction.size(1)--}}
+  {{--          .align('center')--}}
+  {{--          .text(about.shop_name)--}}
+  {{--          .size(0)--}}
+  {{--          .text(about.shop_location);--}}
+  {{--        if(printerData.header != undefined) {--}}
+  {{--          printerAction--}}
+  {{--            .text(printerData.header);--}}
+  {{--        }--}}
+  {{--        printerAction.align('left')--}}
+  {{--          .text('-------------------------------');--}}
+  {{--      }--}}
+  {{--      printerAction.table(['@lang('Cashier')', selling.user.name])--}}
+  {{--      if(selling.table != undefined && selling.table != null) {--}}
+  {{--        printerAction.table(['@lang('Table')', selling.table.number])--}}
+  {{--      }--}}
+  {{--      printerAction.table(['@lang('Payment method')', selling.payment_method.name]);--}}
+  {{--      if(selling.member != undefined && selling.member != null) {--}}
+  {{--        printerAction--}}
+  {{--          .table(['Member', selling.member.name]);--}}
+  {{--      }--}}
+  {{--      printerAction--}}
+  {{--        .text('-------------------------------');--}}
+  {{--      selling.selling_details.forEach(sellingDetail => {--}}
+  {{--        let price = sellingDetail.price;--}}
+  {{--        let text = moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString();--}}
+  {{--        printerAction.table([sellingDetail.product.name, moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString()])--}}
+  {{--        if (sellingDetail.discount_price > 0) {--}}
+  {{--          price = price - sellingDetail.discount_price;--}}
+  {{--          printerAction--}}
+  {{--            .align('right')--}}
+  {{--            .text(`(${moneyFormat(sellingDetail.discount_price)})`)--}}
+  {{--        }--}}
+  {{--        printerAction--}}
+  {{--          .align('right')--}}
+  {{--          .text(moneyFormat(price))--}}
+  {{--          .align('left')--}}
+  {{--      });--}}
+  {{--      printerAction--}}
+  {{--        .text('-------------------------------');--}}
+  {{--      if("@js(feature(SellingTax::class))" == 'true') {--}}
+  {{--        printerAction.table(['@lang('Tax')', `${selling.tax}%`])--}}
+  {{--          .table(['@lang('Tax price')', moneyFormat(selling.tax_price)]);--}}
+  {{--      }--}}
+  {{--      printerAction--}}
+  {{--        .table(['@lang('Subtotal')', moneyFormat(selling.total_price)])--}}
+  {{--      if("@js(feature(Discount::class))" == 'true') {--}}
+  {{--        printerAction--}}
+  {{--          .table(['@lang('Discount')', `(${moneyFormat(selling.total_discount_per_item + selling.discount_price)})`])--}}
+  {{--      }--}}
+  {{--      printerAction--}}
+  {{--        .table(['@lang('Total price')', moneyFormat(selling.grand_total_price)])--}}
+  {{--        .text('-------------------------------')--}}
+  {{--        .table(['@lang('Payed money')', moneyFormat(selling.payed_money)])--}}
+  {{--        .table(['@lang('Change')', moneyFormat(selling.money_changes)])--}}
+  {{--        .align('center');--}}
+
+  {{--      if(printerData.footer != undefined) {--}}
+  {{--        printerAction--}}
+  {{--          .text(printerData.footer);--}}
+  {{--      }--}}
+
+  {{--      await printerAction--}}
+  {{--        .cut()--}}
+  {{--        .print();--}}
+  {{--    }--}}
+  {{--  } catch (error) {--}}
+  {{--    console.error(error);--}}
+  {{--  }--}}
+  {{--});--}}
+
   document.getElementById("printReceiptButton").addEventListener('click', async (event) => {
     let about = @js($about);
     console.log({about, selling});
-    const printerData = getPrinter();
-
+    // const printerData = getPrinter();
+    const printerData = true;
     try {
       if (!printerData) {
         new FilamentNotification()
@@ -344,100 +435,138 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
           .danger()
           .actions([
             new FilamentNotificationAction('Setting')
-            .icon('heroicon-o-cog-6-tooth')
-            .button()
-            .url('/member/printer'),
+              .icon('heroicon-o-cog-6-tooth')
+              .button()
+              .url('/member/printer'),
           ])
           .send()
       } else {
         const printer = new ThermalPrinter();
-        if(about != undefined || about != null) {
+
+        if(about !== undefined && about !== null) {
           printer
             .size('large')
-            .text(about.shop_name.toUpperCase(), 'center')
+            .text(about.shop_name, 'center')
             .size('normal')
-            .text(about.shop_location.toUpperCase());
-        }
-        if(printerData.header != undefined) {
-          printer
-            .size('large')
-            .text(printerData.header.toUpperCase(), 'center');
+            .text(about.shop_location, 'center');
+
+          if(printerData.header !== undefined) {
+            printer.text(printerData.header, 'center');
+          }
+          printer.hr();
         }
 
-        printer.hr();
+        printer.tableRow(
+          ['@lang('Cashier')', selling.user.name],
+          ['40%'],
+          ['left', 'right'],
+        );
 
-        if (selling.user.name !== undefined && selling.user.name !== null) {
+        printer.tableRow(
+          ['@lang('Date')', dayjs(selling.created_at).format('DD/MM/YYYY HH:MM')],
+          ['40%'],
+          ['left', 'right'],
+        );
+
+        if(selling.table !== undefined && selling.table !== null) {
           printer.tableRow(
-            ['@lang('KASIR')', selling.user.name.toUpperCase()],
+            ['@lang('Table')', selling.table.number],
             ['40%'],
+            ['left', 'right'],
           );
         }
-        {{--if(selling.table != undefined && selling.table != null) {--}}
-        {{--  printer.tableRow(--}}
-        {{--    ['@lang('MEJA')', ': ' + selling.table.number],--}}
-        {{--    ['40%'],--}}
-        {{--  );--}}
-        {{--}--}}
-        {{--printer.tableRow(--}}
-        {{--  ['@lang('PEMBAYARAN')', ': ' + selling.payment_method.name.toUpperCase()],--}}
-        {{--  ['40%'],--}}
-        {{--);--}}
+        printer.tableRow(
+          ['@lang('Payment')', selling.payment_method.name],
+          ['40%'],
+          ['left', 'right'],
+        );
 
-        printer.tableRow([])
-        if(selling.member != undefined && selling.member != null) {
+        if(selling.member !== undefined && selling.member !== null) {
           printer.tableRow(
-            ['MEMBER', ': ' + selling.member.name.toUpperCase()],
+            ['Member', selling.member.name],
             ['40%'],
+            ['left', 'right'],
           );
         }
 
         printer.hr();
 
         selling.selling_details.forEach(sellingDetail => {
-          let price = sellingDetail.price;
-          // let text = moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString();
-
-          // if (sellingDetail.discount_price > 0) {
-          //   price = price - sellingDetail.discount_price;
-          //   printer.text(`(${moneyFormat(sellingDetail.discount_price)})`, 'right');
-          // }
-
-          // printer.text(moneyFormat(price), 'right');
-
+          // printer.tableRow([sellingDetail.product.name, moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString()])
           printer.tableRow(
-            [sellingDetail.product.name.toUpperCase(), sellingDetail.qty, sellingDetail.price / sellingDetail.qty, price],
-            ["auto", "8%", "23%", "23%"]);
+            [sellingDetail.product.name, sellingDetail.qty, moneyFormat(sellingDetail.price / sellingDetail.qty)],
+            ["auto", "8%", "23%", "23%"],
+            ['left', 'right', 'right'],
+          );
+
+          // let price = sellingDetail.price;
+          if (sellingDetail.discount_price > 0) {
+            // price = price - sellingDetail.discount_price;
+
+            printer.tableRow(
+              ['@lang('Discount') :', `(${moneyFormat(sellingDetail.discount_price)})`],
+              ['auto', '23%'],
+              ['right', 'right'],
+            );
+          }
+          // printer.text(moneyFormat(price), 'right')
         });
 
         printer.hr();
 
-        {{--if("@js(feature(SellingTax::class))" == 'true') {--}}
-        {{--  printer--}}
-        {{--    .tableRow(['@lang('Tax')', `${selling.tax}%`])--}}
-        {{--    .table(['@lang('Tax price')', moneyFormat(selling.tax_price)]);--}}
-        {{--}--}}
-
-        {{--printer.tableRow(--}}
-        {{--  ['@lang('Subtotal')', selling.total_price],--}}
-        {{--  ['40%'],--}}
-        {{--);--}}
-
-        {{--if("@js(feature(Discount::class))" == 'true') {--}}
-        {{--  printer.tableRow(--}}
-        {{--    ['@lang('Discount')', `(${moneyFormat(selling.total_discount_per_item + selling.discount_price)})`],--}}
-        {{--    ['40%'],--}}
-        {{--  );--}}
-        {{--}--}}
-        printer
-          .tableRow(['@lang('TOTAL')', selling.grand_total_price], ['40%'])
-          .tableRow(['@lang('TUNAI')', selling.payed_money], ['40%'])
-          .tableRow(['@lang('KEMBALI')', selling.money_changes], ['40%']);
-
-        if(printerData.footer != undefined) {
-          printer.text(printerData.footer, 'center');
+        if("@js(feature(SellingTax::class))" === 'true') {
+          printer
+            .tableRow(
+              ['@lang('Tax')', `${selling.tax}%`],
+              ['auto', 'auto'],
+              ['left', 'right'],
+            )
+            .tableRow(
+              ['@lang('Tax price')', moneyFormat(selling.tax_price)],
+              ['auto', 'auto'],
+              ['left', 'right'],
+            );
         }
 
         printer
+          .tableRow(
+            ['@lang('Subtotal')', moneyFormat(selling.total_price)],
+            ['auto', 'auto'],
+            ['left', 'right'],
+          );
+
+        if("@js(feature(Discount::class))" === 'true') {
+          printer
+            .tableRow(
+              ['@lang('Discount')', `(${moneyFormat(selling.total_discount_per_item + selling.discount_price)})`],
+              ['auto', 'auto'],
+              ['left', 'right'],
+            );
+        }
+
+        printer
+          .tableRow(
+            ['@lang('Total')', moneyFormat(selling.grand_total_price)],
+            ['auto', 'auto'],
+            ['left', 'right'],
+          )
+          .hr()
+          .tableRow(
+            ['@lang('Payed money')', moneyFormat(selling.payed_money)],
+            ['auto', 'auto'],
+            ['left', 'right'],
+          )
+          .tableRow(
+            ['@lang('Change')', moneyFormat(selling.money_changes)],
+            ['auto', 'auto'],
+            ['left', 'right'],
+          );
+
+        if(printerData.footer !== undefined) {
+          printer.text(printerData.footer, 'center');
+        }
+
+        await printer
           // .cut()
           .print();
       }

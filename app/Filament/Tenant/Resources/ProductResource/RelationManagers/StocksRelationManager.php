@@ -38,8 +38,10 @@ class StocksRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('stock')
             ->columns([
-                Tables\Columns\TextColumn::make('stock'),
-                Tables\Columns\TextColumn::make('init_stock'),
+                Tables\Columns\TextColumn::make('stock')
+                    ->translateLabel(),
+                Tables\Columns\TextColumn::make('init_stock')
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('date')
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('expired')
@@ -51,20 +53,6 @@ class StocksRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('selling_price')
                     ->translateLabel()
                     ->money(Setting::get('currency', 'IDR')),
-            ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make()
-                    ->action(function (array $data, StockService $stockService) {
-                        $stockService->create(array_merge($data, [
-                            'product_id' => $this->ownerRecord->id,
-                            'is_ready' => true,
-                        ]));
-                    })
-                    ->createAnother(false),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

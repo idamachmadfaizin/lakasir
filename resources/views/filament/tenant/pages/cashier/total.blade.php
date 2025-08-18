@@ -25,9 +25,11 @@ use App\Features\{SellingTax, Discount};
     <p class="font-bold">{{ __('Total') }}</p>
     <p class="font-bold text-lakasir-primary" x-ref="total" data-value="{{ $total_price }}">{{ price_format($total_price) }}</p>
   </div>
-  <div class="flex justify-between">
-    <p class="font-bold">{{ __('Money changes') }}</p>
-    <p class="font-bold text-lakasir-primary" x-ref="moneyChanges"></p>
-  </div>
+  @if(isset($visibleMoneyChanges) && $visibleMoneyChanges)
+    <div class="flex justify-between">
+      <p class="font-bold">{{ __('Money changes') }}</p>
+      <p class="font-bold text-lakasir-primary" x-ref="moneyChanges"></p>
+    </div>
+  @endif
 </div>
 

@@ -38,16 +38,16 @@ class RoleResource extends Resource
                     )
                     ->noSearchResultsMessage('No permissions found.')
                     ->searchable(),
-                CheckboxList::make('mobilePermissions')
-                    ->label('Mobile app permissions')
-                    ->bulkToggleable()
-                    ->columns(4)
-                    ->relationship(
-                        titleAttribute: 'name',
-                        modifyQueryUsing: fn ($query) => $query->where('guard_name', 'sanctum')
-                    )
-                    ->noSearchResultsMessage('No permissions found.')
-                    ->searchable(),
+                // CheckboxList::make('mobilePermissions')
+                //     ->label('Mobile app permissions')
+                //     ->bulkToggleable()
+                //     ->columns(4)
+                //     ->relationship(
+                //         titleAttribute: 'name',
+                //         modifyQueryUsing: fn ($query) => $query->where('guard_name', 'sanctum')
+                //     )
+                //     ->noSearchResultsMessage('No permissions found.')
+                //     ->searchable(),
             ])->columns(1);
     }
 

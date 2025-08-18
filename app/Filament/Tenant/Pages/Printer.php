@@ -2,14 +2,14 @@
 
 namespace App\Filament\Tenant\Pages;
 
-use App\Services\Tenants\PrinterService;
 use App\Traits\HasTranslatableResource;
 use Filament\Actions\Action;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components;
+use Filament\Forms\Components\Actions\Action as ActionsAction;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\Page;
 
@@ -26,10 +26,7 @@ class Printer extends Page implements HasActions, HasForms
 
     public function mount()
     {
-        $print = \App\Models\Tenants\Printer::first()?->toArray();
-        if ($print) {
-            $this->data = $print;
-        }
+        $this->form->fill();
     }
 
     public function form(Form $form): Form
@@ -38,6 +35,36 @@ class Printer extends Page implements HasActions, HasForms
             Components\Textarea::make('header')
                 ->rows(5)
                 ->translateLabel(),
+            Components\TextInput::make('name')
+                // ->required()
+                ->translateLabel(),
+            Components\Select::make('driver')
+                ->default('usb')
+                ->options([
+                    // 'bluetooth' => 'Bluetooh',
+                    'usb' => 'USB',
+                ])
+                ->translateLabel(),
+            Grid::make(columns: 3)
+                ->schema([
+                    Components\TextInput::make('printer')
+                        // ->required()
+                        ->helperText(__('Please click the select printer button to choose the connected printer'))
+                        ->readOnly()
+                        ->translateLabel()
+                        ->columnSpan(2),
+                    Components\TextInput::make('printerId')
+                        // ->required()
+                        ->hintActions([
+                            ActionsAction::make('select_printer')
+                                ->icon('heroicon-o-printer')
+                                ->translateLabel()
+                                ->extraAttributes([
+                                    'x-on:click' => 'fetchDeviceByDriver',
+                                ]),
+                        ])
+                        ->readOnly(),
+                ]),
             Components\Textarea::make('footer')
                 ->rows(5)
                 ->translateLabel(),
@@ -64,18 +91,9 @@ class Printer extends Page implements HasActions, HasForms
 
     public function validateInput()
     {
-    }
-
-    //Save function
-    public function save(PrinterService $printerService)
-    {
-        $printerService->createOrUpdate($this->data);
-
-        Notification::make()
-            ->title(__('Success'))
-            ->success()
-            ->send();
-
-        $this->mount();
+        $this->validate([
+            'data.printer' => 'required',
+            'data.name' => 'required',
+        ]);
     }
 }
